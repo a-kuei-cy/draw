@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>幸運抽獎系統</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e3c72;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+                border-radius: 15px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+                margin-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 480px) {
+            .section-title {
+                font-size: 1em;
+            }
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 480px) {
+            .input-group {
+                flex-direction: column;
+            }
+        }
+
+        input[type="text"],
+        textarea {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        @media (max-width: 480px) {
+            button {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+        }
+
+        .btn-primary {
+            background: #2a5298;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1e3c72;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: scale(1.02);
+        }
+
+        .name-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+            min-height: 50px;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 10px;
+        }
+
+        .name-tag {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: fadeIn 0.3s;
+            font-size: 14px;
+        }
+
+        @media (max-width: 480px) {
+            .name-tag {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .remove-btn {
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .remove-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .status {
+            text-align: center;
+            color: #6b7280;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        .result {
+            text-align: center;
+            margin: 30px 0;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .winner {
+            font-size: 3em;
+            font-weight: bold;
+            color: #7e22ce;
+            animation: bounce 0.6s;
+        }
+
+        @media (max-width: 768px) {
+            .winner {
+                font-size: 2.5em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .winner {
+                font-size: 2em;
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .number-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .number-input-group input {
+            width: 150px;
+        }
+
+        @media (max-width: 480px) {
+            .number-input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .number-input-group input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 幸運抽獎系統</h1>
+
+        <div class="section">
+            <div class="section-title">新增單筆名單</div>
+            <div class="input-group">
+                <input type="text" id="singleName" placeholder="輸入姓名後按下 Enter">
+                <button class="btn-primary" onclick="addSingleName()">新增</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">快速新增 (每行一個)</div>
+            <textarea id="bulkNames" placeholder="從 Excel 或記事本貼上名單..."></textarea>
+            <div class="input-group" style="margin-top: 10px;">
+                <button class="btn-primary" onclick="addBulkNames()">批量新增</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">輸入人數產生座號</div>
+            <div class="number-input-group">
+                <input type="number" id="seatCount" placeholder="輸入人數" min="1">
+                <button class="btn-primary" onclick="generateSeats()">產生</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">匯入名單</div>
+            <div class="name-list" id="nameList"></div>
+            <div class="status" id="status">目前名單是空的，請新增。</div>
+        </div>
+
+        <div class="input-group">
+            <button class="btn-danger" onclick="clearList()">清空名單</button>
+        </div>
+
+        <div class="result" id="result"></div>
+
+        <button class="btn-success" onclick="startDraw()">開始抽獎</button>
+    </div>
+
+    <script>
+        let names = [];
+
+        document.getElementById('singleName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addSingleName();
+            }
+        });
+
+        function addSingleName() {
+            const input = document.getElementById('singleName');
+            const name = input.value.trim();
+            
+            if (name) {
+                names.push(name);
+                input.value = '';
+                updateDisplay();
+            }
+        }
+
+        function addBulkNames() {
+            const textarea = document.getElementById('bulkNames');
+            const lines = textarea.value.split('\n')
+                .map(line => line.trim())
+                .filter(line => line.length > 0);
+            
+            if (lines.length > 0) {
+                names.push(...lines);
+                textarea.value = '';
+                updateDisplay();
+            }
+        }
+
+        function generateSeats() {
+            const input = document.getElementById('seatCount');
+            const count = parseInt(input.value);
+            
+            if (isNaN(count) || count <= 0) {
+                alert('請輸入有效的人數（大於0的數字）');
+                return;
+            }
+
+            if (count > 1000) {
+                alert('人數不能超過1000人');
+                return;
+            }
+
+            if (names.length > 0) {
+                if (!confirm(`目前已有 ${names.length} 位參加者，確定要清空並產生新的座號嗎？`)) {
+                    return;
+                }
+            }
+            
+            names = [];
+            for (let i = 1; i <= count; i++) {
+                names.push(`座號 ${i}`);
+            }
+            input.value = '';
+            updateDisplay();
+        }
+
+        function removeName(index) {
+            names.splice(index, 1);
+            updateDisplay();
+        }
+
+        function clearList() {
+            if (names.length === 0 || confirm('確定要清空所有名單嗎？')) {
+                names = [];
+                updateDisplay();
+                document.getElementById('result').innerHTML = '';
+            }
+        }
+
+        function updateDisplay() {
+            const nameList = document.getElementById('nameList');
+            const status = document.getElementById('status');
+            
+            nameList.innerHTML = '';
+            
+            if (names.length === 0) {
+                status.textContent = '目前名單是空的，請新增。';
+            } else {
+                status.textContent = `目前共有 ${names.length} 位參加者`;
+                
+                names.forEach((name, index) => {
+                    const tag = document.createElement('div');
+                    tag.className = 'name-tag';
+                    tag.innerHTML = `
+                        ${name}
+                        <button class="remove-btn" onclick="removeName(${index})">×</button>
+                    `;
+                    nameList.appendChild(tag);
+                });
+            }
+        }
+
+        function startDraw() {
+            if (names.length === 0) {
+                alert('請先新增名單！');
+                return;
+            }
+
+            const result = document.getElementById('result');
+            let count = 0;
+            const maxCount = 20;
+
+            const interval = setInterval(() => {
+                const randomIndex = Math.floor(Math.random() * names.length);
+                result.innerHTML = `<div style="font-size: 2em; color: #6b7280;">${names[randomIndex]}</div>`;
+                count++;
+
+                if (count >= maxCount) {
+                    clearInterval(interval);
+                    const finalIndex = Math.floor(Math.random() * names.length);
+                    const winner = names[finalIndex];
+                    result.innerHTML = `<div class="winner">🎊 ${winner} 🎊</div>`;
+                }
+            }, 100);
+        }
+
+        updateDisplay();
+    </script>
+</body>
+</html>
